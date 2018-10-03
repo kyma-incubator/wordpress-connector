@@ -35,7 +35,7 @@ function user_registration_handler( $user_id ) {
             "event-id": "'.gen_uuid().'",
             "event-time": "'.date("c",time()).'",
             "data": {
-                "customerId": "'.$user_id.'"
+                "userId": "'.$user_id.'"
               },
             "_nodeFactory": {
               "_cfgBigDecimalExact": false
@@ -140,7 +140,7 @@ function  kyma_page() {
                    </br>
                    <label for="events">Register events (with user created and comment post event as example)</label>
                    </br>
-                   <textarea style="margin-bottom:15px;margin-top:5px" rows="8" cols="50" name="events" id="events">"customer.created.v1":{"subscribe":{"summary":"Customer Register Event v1","payload":{"type":"object","required":["customerId"],"properties":{"customerId":{"type":"string","description":"Id of a Customer","title":"Customer uid"}}}}},"comment.post.v1":{"subscribe":{"summary":"Comment Post Event v1","payload":{"type":"object","required":["commentId"],"properties":{"commentId":{"type":"string","description":"Unique id of a comment","title":"Comment id"},"commentAuthorEmail":{"type":"string","description":"Email of an author","title":"Authors email"},"commentContent":{"type":"string","description":"Content of a comment","title":"Comment content"}}}}}</textarea>
+                   <textarea style="margin-bottom:15px;margin-top:5px" rows="8" cols="50" name="events" id="events">"user.created.v1":{"subscribe":{"summary":"User Register Event v1","payload":{"type":"object","required":["userId"],"properties":{"userId":{"type":"string","description":"Id of a User","title":"User uid"}}}}},"comment.post.v1":{"subscribe":{"summary":"Comment Post Event v1","payload":{"type":"object","required":["commentId"],"properties":{"commentId":{"type":"string","description":"Unique id of a comment","title":"Comment id"},"commentAuthorEmail":{"type":"string","description":"Email of an author","title":"Authors email"},"commentContent":{"type":"string","description":"Content of a comment","title":"Comment content"}}}}}</textarea>
                    <input type="hidden" name="action" value="api_registration_form">
                    <br/>
                    <input class="button-primary" type="submit" value="Register API">
