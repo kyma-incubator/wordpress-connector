@@ -36,7 +36,7 @@ function user_registration_handler( $user_id ) {
             "event-time": "'.date("c",time()).'",
             "data": {
                 "userId": "'.$user_id.'"
-              },
+              }
             "_nodeFactory": {
               "_cfgBigDecimalExact": false
           }}',
@@ -178,3 +178,26 @@ function  build_registartion_body($registration_form){
 }
 
 add_action( 'admin_post_api_registration_form', 'api_registration_call' );
+
+add_action( 'init', function() {
+    global $wp_rewrite;
+    $wp_rewrite->set_permalink_structure( '/%postname%/' );
+    run_activate_plugin( 'basic-auth.php' );
+} );
+
+
+function run_activate_plugin( $plugin ) {
+    $current = get_option( 'active_plugins' );
+    $plugin = plugin_basename( trim( $plugin ) );
+
+    if ( !in_array( $plugin, $current ) ) {
+        $current[] = $plugin;
+        sort( $current );
+        do_action( 'activate_plugin', trim( $plugin ) );
+        update_option( 'active_plugins', $current );
+        do_action( 'activate_' . trim( $plugin ) );
+        do_action( 'activated_plugin', trim( $plugin) );
+    }
+
+    return null;
+}
