@@ -10,21 +10,11 @@ module.exports = { main: function (event, context) {
   if(event.data.commentContent.search("Kyma")){
         var username = "test";
         var password = "test";
-        var wordpressUrl = 'http://10.182.179.49:8000/wp-json/wp/v2/comments/' + event.data.commentId;
-        var proxyUrl = 'https://10.105.32.52:9090';
-
-        console.log(wordpressUrl);
+        var url = `${process.env.GATEWAY_URL}/comments/${event.data.commentId}`;
         var auth = "Basic " + new Buffer(username + ":" + password).toString("base64");
 
-
-
-        var proxiedRequest = request.defaults({
-            'proxy': proxyUrl,
-            strictSSL: false
-        });
-
-        proxiedRequest.delete({
-            url: wordpressUrl,
+        request.delete({
+            url: url,
             headers: {
                 "Authorization": auth
             }
