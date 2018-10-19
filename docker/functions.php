@@ -180,8 +180,6 @@ function  build_events_registartion_body($registration_form){
 add_action( 'admin_post_events_registration_form', 'events_registration_call' );
 
 add_action( 'init', function() {
-    global $wp_rewrite;
-    $wp_rewrite->set_permalink_structure( '/%postname%/' );
     run_activate_plugin( 'basic-auth.php' );
 } );
 
@@ -270,7 +268,7 @@ function  kyma_api_page() {
                    </br>
                    <label for="spec_title">Specification title</label>
                    </br>
-                   <input name="spec_title" id="spec_title" value="wp-events" style="margin-bottom:15px;margin-top:5px">
+                   <input name="spec_title" id="spec_title" value="wp-api" style="margin-bottom:15px;margin-top:5px">
 
                    </br>
                    <label for="spec_version">Specification version</label>
