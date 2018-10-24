@@ -7,7 +7,7 @@ module.exports = { main: function (event, context) {
   console.log('Author e-mail: ' + event.data.commentAuthorEmail);
   console.log('Content: ' + event.data.commentContent);
 
-  if(event.data.commentContent.search("Kyma")){
+  if(event.data.commentContent.search("Kyma")===-1){
         var username = "test";
         var password = "test";
         var url = `${process.env.GATEWAY_URL}/comments/${event.data.commentId}`;
