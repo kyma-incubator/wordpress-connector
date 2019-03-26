@@ -1,7 +1,12 @@
 <?php
 /**
  * Plugin Name: Kyma Connector
- * Version:     0.1.0
+ * Plugin URI:  https://github.com/kyma-incubator/wordpress-connector
+ * Description: Kyma Eventing and API Integration Plugin.
+ * Version:     0.0.1
+ * Author:      kyma-project.io
+ * Author URI:  https://kyma-project.io/
+ * License:     Apache-2.0
  */
 
 namespace KymaProject\WordPressConnector;
