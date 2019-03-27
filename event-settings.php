@@ -2,6 +2,7 @@
 
 namespace KymaProject\WordPressConnector;
 
+
 require_once( dirname( __FILE__ ) . '/class-event.php' );
 class EventSettings {
 
@@ -17,7 +18,7 @@ class EventSettings {
         $events = get_option($this->option_group.'_events');
 
         foreach ($events as $id => $event) {
-            $this->events[$id] = Event::importArray($event, $events_setting_name .'['.$id.']');
+            $this->events[$id] = Event::importArray($event, $events_setting_name, $id);
         }
     }
 
@@ -113,7 +114,7 @@ class EventSettings {
 
     public function field_events_cb(){
         ?>
-        <table>
+        <table id="event-settings">
             <tr>
                 <th>Event Type</th>
                 <th>Event Version</th>
@@ -123,11 +124,27 @@ class EventSettings {
                 <th></th>
             </tr>
             <?php
-        foreach ($this->events as $event) {
-                $event->render_settings();
-        }
-        ?>
-        </table><?php
+            foreach ($this->events as $event) {
+                echo $event->render_settings();
+            }
+
+
+            ?>
+            </table><?
+
+            $events_setting_name = $this->option_group.'_events';
+
+            $e = new Event();
+            $jscode = "jQuery('#event-settings').append(".json_encode($e->render_settings()).");";
+            $jscode .= "var events = jQuery(this).data('events');";
+            $jscode .= "var prefix = '".$events_setting_name."[' + events + ']';";
+            $jscode .= "jQuery('.no-prefix').attr('name', function(i, val){return prefix + val;}).removeClass('no-prefix');";
+            $jscode .= "jQuery(this).data('events',  events + 1);";
+            $jscode .= "return false;";
+
+            $next_id = end($this->events)->get_id() + 1;
+            echo '<a href="#" onclick="'.htmlspecialchars($jscode).'" data-events="'.$next_id.'">Add New Event</a>';
+
     }
 
     public function get_event_spec(){

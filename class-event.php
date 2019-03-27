@@ -8,14 +8,12 @@ class Event {
     private $event_version = "";
     private $hook = "";
     private $description = "";
-    private $payload = array();
+    private $payload = "";
 
-    function __construct($prefix){
-        $this->prefix = $prefix;
-    }
-
-    public static function importArray($a, $prefix){
-        $instance = new self($prefix);
+    public static function importArray($a, $prefix, $id){
+        $instance = new self();
+        $instance->id = $id;
+        $instance->prefix = $prefix."[".$id."]";
         $instance->event_type = $a['event_type'];
         $instance->event_version = $a['event_version'];
         $instance->hook = $a['hook'];
@@ -25,28 +23,34 @@ class Event {
         return $instance;
     }
 
+    public function get_id(){
+        return $this->id;
+    }
+
     public function render_settings(){
         // TODO: Add Javascript to add and remove settings.
-        ?><tr><?php
+        $class = isset( $this->prefix ) ? '' : 'no-prefix';
+        $s = '<tr>';
         $event_type = isset( $this->event_type ) ? esc_attr( $this->event_type ) : '';
-        echo '<td><input type="text" name="'.$this->prefix.'[event_type]" value="'.$event_type.'"></td>';
+        $s .= '<td style="vertical-align: top;"><input type="text" class="'.$class.'" name="'.$this->prefix.'[event_type]" value="'.$event_type.'"></td>';
 
         $event_version = isset( $this->event_version ) ? esc_attr( $this->event_version ) : '';
-        echo '<td><input type="text" name="'.$this->prefix.'[event_version]" value="'.$event_version.'"></td>';
+        $s .= '<td style="vertical-align: top;"><input type="text" class="'.$class.'" name="'.$this->prefix.'[event_version]" value="'.$event_version.'"></td>';
 
         $hook = isset( $this->hook ) ? esc_attr( $this->hook ) : '';
-        echo '<td><input type="text" name="'.$this->prefix.'[hook]" value="'.$hook.'"></td>';
+        $s .= '<td style="vertical-align: top;"><input type="text" class="'.$class.'" name="'.$this->prefix.'[hook]" value="'.$hook.'"></td>';
 
         $description = isset( $this->description ) ? esc_attr( $this->description) : '';
-        echo '<td><textarea name="'.$this->prefix.'[description]" rows="5" cols="30">'.$description.'</textarea></td>';
+        $s .= '<td style="vertical-align: top;"><textarea class="'.$class.'" name="'.$this->prefix.'[description]" rows="5" cols="30">'.$description.'</textarea></td>';
 
 
         // TODO: Validate json
         $payload = isset( $this->payload ) ? esc_attr( $this->payload) : '';
-        echo '<td><textarea name="'.$this->prefix.'[payload]" rows="5" cols="30">'.$payload.'</textarea></td>';
-        echo '<td><a href="#">Remove</a></td>'
+        $s .=  '<td style="vertical-align: top;"><textarea class="'.$class.'" name="'.$this->prefix.'[payload]" rows="5" cols="30">'.$payload.'</textarea></td>';
+        $s .=  '<td><a href="#" onclick="jQuery(this).closest(\'tr\').remove();return false;">Remove</a></td>';
 
-        ?></tr><?php
+        $s .= '</tr>';
+        return $s;
     }
 
     public function get_event_spec(){
@@ -99,7 +103,7 @@ class Event {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-        $ch = KymaConnector_Plugin::add_clientcert_header($ch);
+        $ch = PluginAdmin::add_clientcert_header($ch);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(

@@ -36,13 +36,13 @@ class Settings
 
     public function echoFieldConnection()
     {
-        // TODO put JavaScript into separate file
+        // TODO: put JavaScript into separate file
         ?>
         <script type="text/javascript">
             jQuery(document).ready(function($) {
                 $("#kymaconnectbtn").click(function() {
-                    // TODO show a spinner
-                    // TODO disable button
+                    // TODO: show a spinner
+                    // TODO: disable button
                     var this2 = this;
                     let url = document.getElementById('kyma-connect-url').value;
                     $.post(ajaxurl, {
@@ -50,7 +50,7 @@ class Settings
                         action: "connect_to_kyma",
                         url: url
                     }, function(data) {
-                        // TODO hide spinner
+                        // TODO: hide spinner
                         console.log(data);
                         if (data.success === false) {
                             displayNotice('notice-error', data.data[0].message || ("Unknown error, code " + data.data[0].code));

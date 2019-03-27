@@ -44,9 +44,7 @@ class Core
         $settings = new Settings();
         add_action('admin_menu', array($settings, 'addSettingsPage'));
         add_action('admin_init', array($settings, 'registerSettings'));
-
-        add_action('plugins_loaded', '\KymaProject\WordPressConnector\EventSettings::subscribe_events');
-
+        
         add_action('wp_ajax_connect_to_kyma', array($this, 'onAjaxKymaConnect'));
         // add_action('admin_menu', array($settings, 'init'));
         add_action('admin_menu', '\KymaProject\WordPressConnector\PluginAdmin::options_page');

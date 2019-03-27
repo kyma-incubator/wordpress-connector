@@ -21,6 +21,8 @@ require dirname(__FILE__) . '/class-settings.php';
 require dirname(__FILE__) . '/kyma-admin.php';
 require dirname(__FILE__) . '/event-settings.php';
 
+// This has to run before everything else as it might instrument pretty early hooks.
+add_action('plugins_loaded', '\KymaProject\WordPressConnector\EventSettings::subscribe_events');
 
 $core = new Core();
 add_action('init', array($core, 'onInit'));

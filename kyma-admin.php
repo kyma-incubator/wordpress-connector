@@ -208,7 +208,7 @@ class PluginAdmin
         }
     }
     
-    private static function add_clientcert_header( $ch ) {
+    public static function add_clientcert_header( $ch ) {
         $certDir = Connector::getKymaBasepath();
         $keyFile = $certDir . '/privkey.pem';
         $certFile = $certDir . '/certs/crt.pem';
