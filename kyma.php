@@ -18,6 +18,9 @@ if (!defined('ABSPATH')) {
 require dirname(__FILE__) . '/class-core.php';
 require dirname(__FILE__) . '/class-connector.php';
 require dirname(__FILE__) . '/class-settings.php';
+require dirname(__FILE__) . '/kyma-admin.php';
+require dirname(__FILE__) . '/event-settings.php';
+
 
 $core = new Core();
 add_action('init', array($core, 'onInit'));

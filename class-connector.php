@@ -29,11 +29,14 @@ class Connector
         $body = $response['body'];
         $body_json = json_decode($body);
 
-        // Generate a private key
+        // Generate and store a private key
         // TODO use the key algorithm specified in $response
         $key = openssl_pkey_new(array('private_key_bits' => 2048, 'private_key_type' => OPENSSL_KEYTYPE_RSA));
         if ($key === false) {
             return new WP_Error(500, 'Could not generate private key');
+        }
+        if (openssl_pkey_export_to_file($key, $this->getKymaBasepath() . '/privkey.pem') === false) {
+            return new WP_Error(500, 'Could not store private key');
         }
         
         // Generate a CSR
@@ -77,10 +80,11 @@ class Connector
         // TODO check if they were successfully stored
 
         // Store important URLs
-        update_option('kyma_metadataurl', $body_json->api->metadataUrl);
-        update_option('kyma_infourl', $body_json->api->infoUrl);
-        update_option('kyma_certificatesurl', $body_json->api->certificatesUrl);
-
+        update_option('kymaconnector_metadata_url', $body_json->api->metadataUrl);
+        //update_option('', $body_json->api->infoUrl);
+        //update_option('', $body_json->api->certificatesUrl);
+        update_option('kymaconnector_event_url', $body_json->api->eventsUrl);
+        
         return true;
     }
 
@@ -101,8 +105,7 @@ class Connector
 
     private function storeCertificate($data, $fileName)
     {
-        $uploadDir = wp_upload_dir();
-        $path = $uploadDir['basedir'] . '/kyma/certs/' . $fileName;
+        $path = $this->getKymaBasepath() . "/certs/$fileName";
 
         // TODO ensure existance of directory
         // TODO check writing rights
@@ -111,5 +114,11 @@ class Connector
         $handle = fopen($path, 'w');
         fwrite($handle, base64_decode($data));
         fclose($handle);
+    }
+
+    private function getKymaBasepath()
+    {
+        $uploadDir = wp_upload_dir();
+        return $uploadDir['basedir'] . '/kyma';
     }
 }

@@ -4,11 +4,37 @@ namespace KymaProject\WordPressConnector;
 
 class Core
 {
+    const KYMA_USER_NAME= 'kyma';
+    const KYMA_USER_EMAIL='admin@kyma.cx';
+
     private $connector;
 
     public static function onActivation()
     {
-        // some initial stuff after installation
+        // TODO: Validate if Basic Auth is enabled
+        // TODO: Add Error handling during activation
+
+        add_option('kymaconnector_application_id', '');
+        add_option('kymaconnector_name', 'Wordpress');
+
+        // TODO: Update due to registration data
+        add_option('kymaconnector_event_url', '');
+        add_option('kymaconnector_metadata_url', '');
+
+        $user_name = self::KYMA_USER_NAME;
+        $user_email = self::KYMA_USER_EMAIL;
+
+        if ( !username_exists( $user_name ) and email_exists($user_email) == false ) {
+            $random_password = wp_generate_password( $length=12, $include_standard_special_chars=false );
+            if ( !is_wp_error(wp_create_user( $user_name, $random_password, $user_email ))){
+                update_option('kymaconnector_user', $user_name);
+                update_option('kymaconnector_password', $random_password);
+            }
+        } else {
+            
+        }
+
+        EventSettings::install('kymaconnector');
     }
 
     public function onInit()
@@ -19,7 +45,11 @@ class Core
         add_action('admin_menu', array($settings, 'addSettingsPage'));
         add_action('admin_init', array($settings, 'registerSettings'));
 
+        add_action('plugins_loaded', '\KymaProject\WordPressConnector\EventSettings::subscribe_events');
+
         add_action('wp_ajax_connect_to_kyma', array($this, 'onAjaxKymaConnect'));
+        // add_action('admin_menu', array($settings, 'init'));
+        add_action('admin_menu', '\KymaProject\WordPressConnector\PluginAdmin::options_page');
     }
 
     public function onAjaxKymaConnect()
@@ -38,6 +68,5 @@ class Core
         error_log($result);
         wp_send_json('hello');
     }
-
 
 }
