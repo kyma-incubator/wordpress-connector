@@ -30,17 +30,20 @@ class Connector
         $body_json = json_decode($body);
 
         // Generate and store a private key
-        // TODO use the key algorithm specified in $response
+        // TODO: use the key algorithm specified in $response
         $key = openssl_pkey_new(array('private_key_bits' => 2048, 'private_key_type' => OPENSSL_KEYTYPE_RSA));
         if ($key === false) {
             return new WP_Error(500, 'Could not generate private key');
         }
+
+        mkdir($dir, 0777, true);
+
         if (openssl_pkey_export_to_file($key, $this->getKymaBasepath() . '/privkey.pem') === false) {
             return new WP_Error(500, 'Could not store private key');
         }
         
         // Generate a CSR
-        // TODO possibly respect the certificate extensions specified in $response (none at the time of writing)
+        // TODO: possibly respect the certificate extensions specified in $response (none at the time of writing)
         $dn = $this->getDistinguishedName($body_json->certificate->subject);
         $csr = openssl_csr_new($dn, $key);
         if ($csr === false) {
@@ -105,7 +108,9 @@ class Connector
 
     private function storeCertificate($data, $fileName)
     {
-        $path = $this->getKymaBasepath() . "/certs/$fileName";
+        $folder = $this->getKymaBasepath() . "/certs"; 
+        mkdir($folder, 0777, true);
+        $path = "$folder/$fileName";
 
         // TODO ensure existance of directory
         // TODO check writing rights
