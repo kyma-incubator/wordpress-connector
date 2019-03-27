@@ -36,9 +36,10 @@ class Connector
             return new WP_Error(500, 'Could not generate private key');
         }
 
+        $dir = $this->getKymaBasepath();
         mkdir($dir, 0777, true);
 
-        if (openssl_pkey_export_to_file($key, $this->getKymaBasepath() . '/privkey.pem') === false) {
+        if (openssl_pkey_export_to_file($key, $dir . '/privkey.pem') === false) {
             return new WP_Error(500, 'Could not store private key');
         }
         
