@@ -121,7 +121,7 @@ class Connector
         fclose($handle);
     }
 
-    private function getKymaBasepath()
+    public static function getKymaBasepath()
     {
         $uploadDir = wp_upload_dir();
         return $uploadDir['basedir'] . '/kyma';

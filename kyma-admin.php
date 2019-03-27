@@ -201,7 +201,7 @@ class PluginAdmin
         } elseif($code == 404) {
             add_settings_error( 'kymaconnector_messages', 'kymaconnector_message', "Application Registration Failed due to 404 - ".$resp, 'error' );
             update_option('kymaconnector_application_id', '');
-            PluginAdmin::register_application();
+            PluginAdmin::register_application($event_spec);
         } else {
 
             add_settings_error( 'kymaconnector_messages', 'kymaconnector_message', "Application Registration Failed - ".$resp, 'error' );
@@ -209,12 +209,12 @@ class PluginAdmin
     }
     
     private static function add_clientcert_header( $ch ) {
-        $uploadDir = wp_upload_dir();
-        $keyFile = $uploadDir['basedir'] . '/kyma/privkey.key';
-        $certFile = $uploadDir['basedir'] . '/kyma/certs/crt.pem';
+        $certDir = Connector::getKymaBasepath();
+        $keyFile = $certDir . '/privkey.pem';
+        $certFile = $certDir . '/certs/crt.pem';
 
-        curl_setopt($ch, CURLOPT_SSLKEY, dirname( __FILE__ ) . $keyFile);
-        curl_setopt($ch, CURLOPT_SSLCERT, dirname( __FILE__ ) . $certFile);
+        curl_setopt($ch, CURLOPT_SSLKEY, $keyFile);
+        curl_setopt($ch, CURLOPT_SSLCERT, $certFile);
         curl_setopt($ch, CURLOPT_VERBOSE, true);
         
         return $ch;
