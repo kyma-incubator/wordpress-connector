@@ -7,7 +7,17 @@ class Core
     const KYMA_USER_NAME= 'kyma';
     const KYMA_USER_EMAIL='admin@kyma.cx';
 
+    public static $scriptUrl;
+    public static $styleUrl;
+
     private $connector;
+
+    public function __construct($basefile)
+    {
+        $pluginUrl = plugin_dir_url($basefile);
+        self::$scriptUrl = $pluginUrl . 'js/';
+        self::$styleUrl = $pluginUrl . 'css/';
+    }
 
     public static function onActivation()
     {
@@ -44,6 +54,7 @@ class Core
         $settings = new Settings();
         add_action('admin_menu', array($settings, 'addSettingsPage'));
         add_action('admin_init', array($settings, 'registerSettings'));
+        add_action('admin_enqueue_scripts', array($settings, 'enqueueScripts'));
         
         add_action('wp_ajax_connect_to_kyma', array($this, 'onAjaxKymaConnect'));
         // add_action('admin_menu', array($settings, 'init'));

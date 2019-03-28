@@ -24,7 +24,7 @@ require dirname(__FILE__) . '/event-settings.php';
 // This has to run before everything else as it might instrument pretty early hooks.
 add_action('plugins_loaded', '\KymaProject\WordPressConnector\EventSettings::subscribe_events');
 
-$core = new Core();
+$core = new Core(__FILE__);
 add_action('init', array($core, 'onInit'));
 
 register_activation_hook(__FILE__, function () {
