@@ -76,7 +76,7 @@ class PluginAdmin
         }
 
         // TODO: Add to cron and to change hook
-        self::register_application($this->event_settings->get_event_spec());
+        Connector::register_application($this->event_settings->get_event_spec());
 
         if ( isset( $_GET['settings-updated'] ) ) {
             // add settings saved message with the class of "updated"
@@ -136,87 +136,5 @@ class PluginAdmin
         ?>
             <textarea name="kymaconnector_description" rows="5" cols="50"><?php echo isset( $setting ) ? esc_attr( $setting ) : ''; ?></textarea>
         <?php
-    }
-
-    // TODO: Run register only on updates
-    public static function register_application($event_spec){
-
-        $provider = "wordpress";
-
-        $name = get_option('kymaconnector_name');;
-        if( empty($name)){
-            add_settings_error( 'kymaconnector_messages', 'kymaconnector_message', "Application Registration Failed - Please set application name.", 'error' );
-            return;                
-        }
-
-        $description = get_option('kymaconnector_description');;
-        if( empty($description)){
-            add_settings_error( 'kymaconnector_messages', 'kymaconnector_message', "Application Registration Failed - Please set application description.", 'error' );
-            return;                
-        }
-
-
-        $user = get_option('kymaconnector_user');
-        $password = get_option('kymaconnector_password');
-        if(empty($user) || empty($password)){
-            add_settings_error( 'kymaconnector_messages', 'kymaconnector_message', "Application Registration Failed - Please set kyma user and password.", 'error' );
-            return;
-        }
-
-        $api = new OpenAPIGenerator();
-        $api_spec = $api->get_api_spec("Wordpress");
-
-        $registration_body = '{"provider":"'.$provider.'","name":"'.$name.'","description":"'.$description.'","events":'.$event_spec.', "api":{"targetUrl":"'.get_rest_url().'","spec":'.$api_spec.', "credentials":{"basic":{"username":"'.$user.'", "password":"'.$password.'"}}}}';
-        $url =  get_option("kymaconnector_metadata_url");
-        $id = get_option("kymaconnector_application_id");
-        //error_log($registration_body);
-        
-        $ch = curl_init();
-
-        if (empty($id)){
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-        } else {
-            curl_setopt($ch, CURLOPT_URL, $url . "/" . $id);
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
-        }
-        
-        $ch = PluginAdmin::add_clientcert_header($ch);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $registration_body);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            'Content-Type: application/json',
-            'Content-Length: ' . strlen($registration_body))
-        );
-        
-        $resp = curl_exec($ch);
-
-        $code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
-
-        if($code == 200 ){
-            add_settings_error( 'kymaconnector_messages', 'kymaconnector_message', "Application Registered", 'updated' );
-            if (empty($id)){
-                update_option('kymaconnector_application_id', json_decode($resp)->id);
-            }
-        } elseif($code == 404) {
-            add_settings_error( 'kymaconnector_messages', 'kymaconnector_message', "Application Registration Failed due to 404 - ".$resp, 'error' );
-            update_option('kymaconnector_application_id', '');
-            PluginAdmin::register_application($event_spec);
-        } else {
-
-            add_settings_error( 'kymaconnector_messages', 'kymaconnector_message', "Application Registration Failed - ".$resp, 'error' );
-        }
-    }
-    
-    public static function add_clientcert_header( $ch ) {
-        $certDir = Connector::getKymaBasepath();
-        $keyFile = $certDir . '/privkey.pem';
-        $certFile = $certDir . '/certs/crt.pem';
-
-        curl_setopt($ch, CURLOPT_SSLKEY, $keyFile);
-        curl_setopt($ch, CURLOPT_SSLCERT, $certFile);
-        curl_setopt($ch, CURLOPT_VERBOSE, true);
-        
-        return $ch;
     }
 }
