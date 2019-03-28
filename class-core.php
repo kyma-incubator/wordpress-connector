@@ -57,8 +57,6 @@ class Core
         add_action('admin_enqueue_scripts', array($settings, 'enqueueScripts'));
         
         add_action('wp_ajax_connect_to_kyma', array($this, 'onAjaxKymaConnect'));
-        // add_action('admin_menu', array($settings, 'init'));
-        add_action('admin_menu', '\KymaProject\WordPressConnector\PluginAdmin::options_page');
     }
 
     public function onAjaxKymaConnect()

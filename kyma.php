@@ -16,9 +16,9 @@ if (!defined('ABSPATH')) {
 }
 
 require dirname(__FILE__) . '/class-core.php';
+require dirname(__FILE__) . '/class-openapi-generator.php';
 require dirname(__FILE__) . '/class-connector.php';
 require dirname(__FILE__) . '/class-settings.php';
-require dirname(__FILE__) . '/kyma-admin.php';
 require dirname(__FILE__) . '/event-settings.php';
 
 // This has to run before everything else as it might instrument pretty early hooks.

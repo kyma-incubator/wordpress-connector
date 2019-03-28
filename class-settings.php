@@ -5,6 +5,7 @@ namespace KymaProject\WordPressConnector;
 class Settings
 {
     const PAGESLUG = 'kymaconnector-settings';
+    const OPTIONGROUP = 'kymaconnector';
 
     private $connector;
 
@@ -40,15 +41,64 @@ class Settings
             'kymaconnector_settings',
             'Setup',
             null,
-            'kymaconnector-settings'
+            self::PAGESLUG
         );
         add_settings_field(
             'kymaconnector-setup',
             'Kyma Connection',
             array($this, 'echoFieldConnection'),
-            'kymaconnector-settings',
+            self::PAGESLUG,
             'kymaconnector_settings'
         );
+
+        add_settings_section( 
+            'kymaconnector_api_settings', 
+            'API Registration Settings', 
+            function () {
+                echo '<p>API Registration details.</p>';
+            }, 
+            self::PAGESLUG
+        );
+
+        add_settings_field(
+            'kymaconnector_user',
+            'Wordpress API User Name',
+            array($this, 'field_user_cb'),
+            self::PAGESLUG,
+            'kymaconnector_api_settings'
+            );
+        
+        add_settings_field(
+            'kymaconnector_password',
+            'Wordpress API User Password',
+            array($this, 'field_password_cb'),
+            self::PAGESLUG,
+            'kymaconnector_api_settings'
+            );
+
+        add_settings_field(
+            'kymaconnector_name',
+            'Connector Name',
+            array($this, 'field_name_cb'),
+            self::PAGESLUG,
+            'kymaconnector_api_settings'
+        );
+
+        add_settings_field(
+            'kymaconnector_description',
+            'Connector Description',
+            array($this, 'field_description_cb'),
+            self::PAGESLUG,
+            'kymaconnector_api_settings'
+        );
+
+        register_setting(self::OPTIONGROUP, 'kymaconnector_user');
+        register_setting(self::OPTIONGROUP, 'kymaconnector_password');
+        register_setting(self::OPTIONGROUP, 'kymaconnector_name');
+        register_setting(self::OPTIONGROUP, 'kymaconnector_description');
+
+        $this->event_settings = new EventSettings(self::OPTIONGROUP, self::PAGESLUG);
+        $this->event_settings->settings_page();
     }
 
     public function echoFieldConnection()
@@ -70,18 +120,61 @@ class Settings
             wp_die(__('You do not have sufficient permissions to manage options for this site.'));
         }
 
+        // TODO: Add to cron and to change hook
+        Connector::register_application($this->event_settings->get_event_spec());
+
+        if ( isset( $_GET['settings-updated'] ) ) {
+            // add settings saved message with the class of "updated"
+            add_settings_error( 'kymaconnector_messages', 'kymaconnector_message', "Settings Saved", 'updated' );
+        }
+            
+        // show error/update messages
+        settings_errors( 'kymaconnector_messages' );
+
         ?>
         <div class="wrap">
         <h1>Kyma Connector Settings</h1>
         <div id="kymanotices"></div>
         <form method="post" action="options.php">
         <?php
-        settings_fields('kymaconnector_settings');
-        do_settings_sections('kymaconnector-settings');
+        settings_fields(self::OPTIONGROUP);
+        do_settings_sections(self::PAGESLUG);
         submit_button();
         ?>
         </form>
         </div>
+        <?php
+    }
+
+    public function field_password_cb()
+    {
+        $setting = get_option('kymaconnector_password');
+        ?>
+            <input type="password" name="kymaconnector_password" value="<?php echo isset( $setting ) ? esc_attr( $setting ) : ''; ?>">
+        <?php
+    }
+
+    public function field_user_cb()
+    {   
+        $setting = get_option('kymaconnector_user');
+        ?>
+            <input type="text" name="kymaconnector_user" value="<?php echo isset( $setting ) ? esc_attr( $setting ) : ''; ?>">
+        <?php
+    }
+
+    public function field_name_cb()
+    {   
+        $setting = get_option('kymaconnector_name');
+        ?>
+            <input type="text" name="kymaconnector_name" value="<?php echo isset( $setting ) ? esc_attr( $setting ) : ''; ?>">
+        <?php
+    }
+
+    public function field_description_cb()
+    {   
+        $setting = get_option('kymaconnector_description');
+        ?>
+            <textarea name="kymaconnector_description" rows="5" cols="50"><?php echo isset( $setting ) ? esc_attr( $setting ) : ''; ?></textarea>
         <?php
     }
 }

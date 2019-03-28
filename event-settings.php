@@ -10,10 +10,12 @@ class EventSettings {
     private $description = "Wordpress Event Definition";
     private $version = "1.0";
     private $option_group;
+    private $page_name;
     public $events = array();
 
-    function __construct($og){
+    function __construct($og, $page_name){
         $this->option_group = $og;
+        $this->page_name = $page_name;
         $events_setting_name = $this->option_group.'_events';
         $events = get_option($this->option_group.'_events');
 
@@ -23,7 +25,7 @@ class EventSettings {
     }
 
     public static function subscribe_events(){
-        $events = new EventSettings('kymaconnector');
+        $events = new EventSettings('kymaconnector', '');
         foreach($events->events as $id => $event){
             $event->register_hook();
         }
@@ -51,14 +53,14 @@ class EventSettings {
             $this->option_group.'_event_settings', 
             'Events Registration Settings', 
             array($this, 'settings_section_cb'), 
-            $this->option_group
+            $this->page_name
         );
 
         add_settings_field(
             $this->option_group.'_event_api_name',
             'Event API Name',
             array($this, 'field_api_name_cb'),
-            $this->option_group,
+            $this->page_name,
             $this->option_group.'_event_settings'
         );
         
@@ -68,7 +70,7 @@ class EventSettings {
             $this->option_group.'_event_api_version',
             'Event API Version',
             array($this, 'field_api_version_cb'),
-            $this->option_group,
+            $this->page_name,
             $this->option_group.'_event_settings'
         );
         
@@ -78,7 +80,7 @@ class EventSettings {
             $this->option_group.'_event_api_description',
             'Event API Description',
             array($this, 'field_api_description_cb'),
-            $this->option_group,
+            $this->page_name,
             $this->option_group.'_event_settings'
         );
         
@@ -88,7 +90,7 @@ class EventSettings {
             $this->option_group.'_events',
             'Events',
             array($this, 'field_events_cb'),
-            $this->option_group,
+            $this->page_name,
             $this->option_group.'_event_settings'
         );
     }
