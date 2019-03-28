@@ -148,33 +148,25 @@ class Settings
 
     public function field_password_cb()
     {
-        $setting = get_option('kymaconnector_password');
-        ?>
-            <input type="password" name="kymaconnector_password" value="<?php echo isset( $setting ) ? esc_attr( $setting ) : ''; ?>">
-        <?php
+        $setting = get_option('kymaconnector_password', '');
+        printf('<input type="password" name="kymaconnector_password" value="%s">', esc_attr( $setting ));
     }
 
     public function field_user_cb()
     {   
-        $setting = get_option('kymaconnector_user');
-        ?>
-            <input type="text" name="kymaconnector_user" value="<?php echo isset( $setting ) ? esc_attr( $setting ) : ''; ?>">
-        <?php
+        $setting = get_option('kymaconnector_user', '');
+        printf('<input type="text" name="kymaconnector_user" value="%s">', esc_attr( $setting ));
     }
 
     public function field_name_cb()
     {   
-        $setting = get_option('kymaconnector_name');
-        ?>
-            <input type="text" name="kymaconnector_name" value="<?php echo isset( $setting ) ? esc_attr( $setting ) : ''; ?>">
-        <?php
+        $setting = get_option('kymaconnector_name', '');
+        printf('<input type="text" name="kymaconnector_name" value="%s">', esc_attr( $setting ));
     }
 
     public function field_description_cb()
     {   
-        $setting = get_option('kymaconnector_description');
-        ?>
-            <textarea name="kymaconnector_description" rows="5" cols="50"><?php echo isset( $setting ) ? esc_attr( $setting ) : ''; ?></textarea>
-        <?php
+        $setting = get_option('kymaconnector_description', '');
+        printf('<textarea name="kymaconnector_description" rows="5" cols="50">%s</textarea>', esc_textarea( $setting ));
     }
 }

@@ -100,18 +100,30 @@ class EventSettings {
     }
 
     public function field_api_name_cb(){
-        $value = isset( $this->name ) ? esc_attr( $this->name ) : '';
-        echo '<input type="text" name="'.$this->option_group.'_event_api_name" value="'.$value.'">';
+        $value = isset( $this->name ) ? $this->name : '';
+        printf(
+            '<input type="text" name="%s" value="%s">',
+            esc_attr($this->option_group . '_event_api_name'),
+            esc_attr($value)
+        );
     }
 
     public function field_api_version_cb(){
-        $value = isset( $this->version ) ? esc_attr( $this->version ) : '';
-        echo '<input type="text" name="'.$this->option_group.'_event_api_version" value="'.$value.'">';
+        $value = isset( $this->version ) ? $this->version : '';
+        printf(
+            '<input type="text" name="%s" value="%s">',
+            esc_attr($this->option_group . '_event_api_version'),
+            esc_attr($value)
+        );
     }
 
     public function field_api_description_cb(){
-        $value = isset( $this->description ) ? esc_attr( $this->description ) : '';
-        echo '<textarea name="'.$this->option_group.'_event_api_description" rows="5" cols="50">'.$value.'</textarea>';
+        $value = isset( $this->description ) ? $this->description : '';
+        printf(
+            '<textarea name="%s" rows="5" cols="50">%s</textarea>',
+            esc_attr($this->option_group . '_event_api_description'),
+            esc_textarea($value)
+        );
     }
 
     public function field_events_cb(){
@@ -154,9 +166,14 @@ class EventSettings {
         foreach ($this->events as $event) {
             $topics .= $event->get_event_spec().",";
         }
-
         $topics = rtrim($topics, ",");
-        $spec = '{"spec":{"asyncapi":"1.0.0","info":{"title":"'.$this->name.'","version":"'.$this->version.'","description":"'.$this->description.'"},"topics":{'.$topics.'}}}';
-        return $spec;
+
+        return sprintf(
+            '{"spec":{"asyncapi":"1.0.0","info":{"title":"%s","version":"%s","description":"%s"},"topics":{%s}}}',
+            $this->name,
+            $this->version,
+            $this->description,
+            $topics
+        );
     }
 }

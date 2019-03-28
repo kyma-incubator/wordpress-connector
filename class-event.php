@@ -54,7 +54,13 @@ class Event {
     }
 
     public function get_event_spec(){
-        return '"'.$this->event_type.'.'.$this->event_version.'":{"subscribe":{"summary":"'.$this->description.'","payload":'.$this->get_payload_spec().'}}';
+        return sprintf(
+            '"%s.%s":{"subscribe":{"summary":"%s","payload":%s}}',
+            $this->event_type,
+            $this->event_version,
+            $this->description,
+            $this->get_payload_spec()
+        );
     }
 
     private function get_payload_spec(){
