@@ -130,7 +130,7 @@ class EventSettings {
 
 
             ?>
-            </table><?
+            </table><?php
 
             $events_setting_name = $this->option_group.'_events';
 
