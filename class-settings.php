@@ -6,6 +6,13 @@ class Settings
 {
     const PAGESLUG = 'kymaconnector-settings';
 
+    private $connector;
+
+    public function __construct(Connector $connector)
+    {
+        $this->connector = $connector;
+    }
+
     public function addSettingsPage()
     {
         add_options_page(
@@ -46,10 +53,15 @@ class Settings
 
     public function echoFieldConnection()
     {
-        ?>
-        <input type="url" id="kyma-connect-url">
-        <input type="button" id="kymaconnectbtn" class="button" value="Connect">
-        <?php
+        $connected = $this->connector->isConnected();
+        if ($connected === true) {
+            echo '<p class="notice notice-success">Connection to Kyma works</p>';
+        } elseif (is_wp_error($connected)) {
+            echo '<p class="notice notice-error">An error ocurred while checking the connection to Kyma: ' . esc_html($connected->get_error_message()) . '</p>';
+        } else {
+            echo '<input type="url" id="kyma-connect-url">';
+            echo '<input type="button" id="kymaconnectbtn" class="button" value="Connect">';
+        }
     }
 
     public function echoSettingsPage()

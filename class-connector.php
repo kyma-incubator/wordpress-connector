@@ -127,4 +127,33 @@ class Connector
         $uploadDir = wp_upload_dir();
         return $uploadDir['basedir'] . '/kyma';
     }
+
+    /**
+     * @return bool
+     */
+    public function isConnected()
+    {
+        $url = get_option("kymaconnector_metadata_url");
+        $applicationId = get_option("kymaconnector_application_id");
+
+        if (empty($url) || empty($applicationId)) {
+            return false;
+        }
+        
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, $url . "/" . $applicationId);
+        
+        $ch = PluginAdmin::add_clientcert_header($ch);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        
+        $resp = curl_exec($ch);
+        $code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+
+        if ($code !== 200) {
+            return new WP_Error($code, 'The metadata URL could not be accessed');
+        }
+
+        return true;
+    }
 }

@@ -51,7 +51,7 @@ class Core
     {
         $this->connector = new Connector();
 
-        $settings = new Settings();
+        $settings = new Settings($this->connector);
         add_action('admin_menu', array($settings, 'addSettingsPage'));
         add_action('admin_init', array($settings, 'registerSettings'));
         add_action('admin_enqueue_scripts', array($settings, 'enqueueScripts'));
