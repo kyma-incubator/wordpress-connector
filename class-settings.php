@@ -32,7 +32,10 @@ class Settings
         }
 
         wp_enqueue_script('kyma-settings', Core::$scriptUrl . 'settings.js', array('jquery'));
-        wp_localize_script('kyma-settings', 'kyma_ajax_vars', array('nonce' => wp_create_nonce('kymaconnection')));
+        wp_localize_script('kyma-settings', 'kyma_ajax_vars', array(
+            'connectnonce' => wp_create_nonce('kymaconnection'),
+            'disconnectnonce' => wp_create_nonce('kymadisconnection')
+        ));
     }
 
     public function registerSettings()
@@ -106,6 +109,7 @@ class Settings
         $connected = $this->connector->isConnected();
         if ($connected === true) {
             echo '<p class="notice notice-success">Connection to Kyma works</p>';
+            echo '<input type="button" id="kymadisconnectbtn" class="button" value="Disconnect">';
         } elseif (is_wp_error($connected)) {
             echo '<p class="notice notice-error">An error ocurred while checking the connection to Kyma: ' . esc_html($connected->get_error_message()) . '</p>';
         } else {
@@ -121,7 +125,9 @@ class Settings
         }
 
         // TODO: Add to cron and to change hook
-        Connector::register_application($this->event_settings->get_event_spec());
+        if (!empty(get_option('kymaconnector_metadata_url'))) {
+            Connector::register_application($this->event_settings->get_event_spec());
+        }
 
         if ( isset( $_GET['settings-updated'] ) ) {
             // add settings saved message with the class of "updated"

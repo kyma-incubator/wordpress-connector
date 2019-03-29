@@ -57,6 +57,7 @@ class Core
         add_action('admin_enqueue_scripts', array($settings, 'enqueueScripts'));
         
         add_action('wp_ajax_connect_to_kyma', array($this, 'onAjaxKymaConnect'));
+        add_action('wp_ajax_disconnect_from_kyma', array($this, 'onAjaxKymaDisconnect'));
     }
 
     public function onAjaxKymaConnect()
@@ -72,8 +73,21 @@ class Core
             return;
         }
 
-        error_log($result);
-        wp_send_json('hello');
+        wp_send_json(array('connected' => true));
     }
 
+    public function onAjaxKymaDisconnect()
+    {
+        // TODO check access rights of the user
+        
+        check_ajax_referer( 'kymadisconnection' );
+
+        $result = $this->connector->disconnect();
+        if (is_wp_error($result)) {
+            wp_send_json_error($result);
+            return;
+        }
+
+        wp_send_json(array('connected' => false));
+    }
 }

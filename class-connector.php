@@ -92,6 +92,15 @@ class Connector
         return true;
     }
 
+    public function disconnect()
+    {
+        update_option('kymaconnector_metadata_url', '');
+        update_option('kymaconnector_event_url', '');
+        update_option('kymaconnector_application_id', '');
+        // TODO: deregister application
+        // TODO: delete certificates?
+    }
+
     /**
      * @param string $string description
      * @return string[]
