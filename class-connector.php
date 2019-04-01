@@ -171,7 +171,6 @@ class Connector
         return true;
     }
 
-    // TODO: Run register only on updates
     public static function register_application($event_spec){
 
         $provider = "wordpress";
@@ -226,6 +225,7 @@ class Connector
 
         $code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
 
+        // TODO: Find alternative to add_settings_error() as they will not be shown on the Plugin screen when (de)activating a plugin
         if($code == 200 ){
             add_settings_error( 'kymaconnector_messages', 'kymaconnector_message', "Application Registered", 'updated' );
             if (empty($id)){
@@ -236,7 +236,6 @@ class Connector
             update_option('kymaconnector_application_id', '');
             PluginAdmin::register_application($event_spec);
         } else {
-
             add_settings_error( 'kymaconnector_messages', 'kymaconnector_message', "Application Registration Failed - ".$resp, 'error' );
         }
     }

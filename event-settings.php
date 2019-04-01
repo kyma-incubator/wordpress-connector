@@ -17,11 +17,18 @@ class EventSettings {
         $this->option_group = $og;
         $this->page_name = $page_name;
         $events_setting_name = $this->option_group.'_events';
-        $events = get_option($this->option_group.'_events');
+        $events = get_option($events_setting_name);
 
         foreach ($events as $id => $event) {
             $this->events[$id] = Event::importArray($event, $events_setting_name, $id);
         }
+
+        add_action("update_option_$events_setting_name", function ($old_value, $new_value) {
+            // set a flag when the events change, so that the application registration gets updated
+            if ($old_value !== $new_value) {
+                update_option('kymaconnector_events_updated', '1');
+            }
+        }, 10, 2);
     }
 
     public static function subscribe_events(){

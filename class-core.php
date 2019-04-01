@@ -11,6 +11,7 @@ class Core
     public static $styleUrl;
 
     private $connector;
+    private $event_settings;
 
     public function __construct($basefile)
     {
@@ -50,14 +51,22 @@ class Core
     public function onInit()
     {
         $this->connector = new Connector();
+        $this->event_settings = new EventSettings('kymaconnector', 'kymaconnector-settings');
+        add_action('activated_plugin', array($this, 'onPluginChanges'));
+        add_action('deactivated_plugin', array($this, 'onPluginChanges'));
 
-        $settings = new Settings($this->connector);
+        $settings = new Settings('kymaconnector-settings', 'kymaconnector', $this->connector, $this->event_settings);
         add_action('admin_menu', array($settings, 'addSettingsPage'));
         add_action('admin_init', array($settings, 'registerSettings'));
         add_action('admin_enqueue_scripts', array($settings, 'enqueueScripts'));
         
         add_action('wp_ajax_connect_to_kyma', array($this, 'onAjaxKymaConnect'));
         add_action('wp_ajax_disconnect_from_kyma', array($this, 'onAjaxKymaDisconnect'));
+    }
+
+    public function onPluginChanges()
+    {
+        Connector::register_application($this->event_settings->get_event_spec());
     }
 
     public function onAjaxKymaConnect()

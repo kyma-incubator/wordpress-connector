@@ -4,14 +4,17 @@ namespace KymaProject\WordPressConnector;
 
 class Settings
 {
-    const PAGESLUG = 'kymaconnector-settings';
-    const OPTIONGROUP = 'kymaconnector';
-
     private $connector;
+    private $event_settings;
+    private $option_group;
+    private $page_name;
 
-    public function __construct(Connector $connector)
+    public function __construct($page_name, $option_group, Connector $connector, EventSettings $event_settings)
     {
         $this->connector = $connector;
+        $this->event_settings = $event_settings;
+        $this->option_group = $option_group;
+        $this->page_name = $page_name;
     }
 
     public function addSettingsPage()
@@ -20,14 +23,14 @@ class Settings
             'Kyma Connector Settings',
             'Kyma Connector',
             'manage_options',
-            self::PAGESLUG,
+            $this->page_name,
             array($this, 'echoSettingsPage')
         );
     }
 
     public function enqueueScripts($hook)
     {
-        if ($hook !== 'settings_page_' . self::PAGESLUG) {
+        if ($hook !== 'settings_page_' . $this->page_name) {
             return;
         }
 
@@ -44,13 +47,13 @@ class Settings
             'kymaconnector_settings',
             'Setup',
             null,
-            self::PAGESLUG
+            $this->page_name
         );
         add_settings_field(
             'kymaconnector-setup',
             'Kyma Connection',
             array($this, 'echoFieldConnection'),
-            self::PAGESLUG,
+            $this->page_name,
             'kymaconnector_settings'
         );
 
@@ -60,14 +63,14 @@ class Settings
             function () {
                 echo '<p>API Registration details.</p>';
             }, 
-            self::PAGESLUG
+            $this->page_name
         );
 
         add_settings_field(
             'kymaconnector_user',
             'Wordpress API User Name',
             array($this, 'field_user_cb'),
-            self::PAGESLUG,
+            $this->page_name,
             'kymaconnector_api_settings'
             );
         
@@ -75,7 +78,7 @@ class Settings
             'kymaconnector_password',
             'Wordpress API User Password',
             array($this, 'field_password_cb'),
-            self::PAGESLUG,
+            $this->page_name,
             'kymaconnector_api_settings'
             );
 
@@ -83,7 +86,7 @@ class Settings
             'kymaconnector_name',
             'Connector Name',
             array($this, 'field_name_cb'),
-            self::PAGESLUG,
+            $this->page_name,
             'kymaconnector_api_settings'
         );
 
@@ -91,16 +94,15 @@ class Settings
             'kymaconnector_description',
             'Connector Description',
             array($this, 'field_description_cb'),
-            self::PAGESLUG,
+            $this->page_name,
             'kymaconnector_api_settings'
         );
 
-        register_setting(self::OPTIONGROUP, 'kymaconnector_user');
-        register_setting(self::OPTIONGROUP, 'kymaconnector_password');
-        register_setting(self::OPTIONGROUP, 'kymaconnector_name');
-        register_setting(self::OPTIONGROUP, 'kymaconnector_description');
+        register_setting($this->option_group, 'kymaconnector_user');
+        register_setting($this->option_group, 'kymaconnector_password');
+        register_setting($this->option_group, 'kymaconnector_name');
+        register_setting($this->option_group, 'kymaconnector_description');
 
-        $this->event_settings = new EventSettings(self::OPTIONGROUP, self::PAGESLUG);
         $this->event_settings->settings_page();
     }
 
@@ -124,11 +126,14 @@ class Settings
             wp_die(__('You do not have sufficient permissions to manage options for this site.'));
         }
 
-        // TODO: Add to cron and to change hook
-        if (!empty(get_option('kymaconnector_metadata_url'))) {
-            Connector::register_application($this->event_settings->get_event_spec());
+        // In case settings were updated
+        if (get_option('kymaconnector_events_updated', '0') === '1') {
+            if (!empty(get_option('kymaconnector_metadata_url'))) {
+                Connector::register_application($this->event_settings->get_event_spec());
+                update_option('kymaconnector_events_updated', '0');
+            }
         }
-            
+        
         // show error/update messages
         settings_errors( 'kymaconnector_messages' );
 
@@ -138,8 +143,8 @@ class Settings
         <div id="kymanotices"></div>
         <form method="post" action="options.php">
         <?php
-        settings_fields(self::OPTIONGROUP);
-        do_settings_sections(self::PAGESLUG);
+        settings_fields($this->option_group);
+        do_settings_sections($this->page_name);
         submit_button();
         ?>
         </form>
