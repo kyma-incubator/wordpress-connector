@@ -37,7 +37,11 @@ class Connector
         }
 
         $dir = $this->getKymaBasepath();
-        mkdir($dir, 0640, true);
+        try {
+            $this->ensureDirectory($dir);
+        } catch (Exception $exception) {
+            return new WP_Error(500, $exception->getMessage());
+        }
 
         if (openssl_pkey_export_to_file($key, $dir . '/privkey.pem') === false) {
             return new WP_Error(500, 'Could not store private key');
@@ -78,10 +82,13 @@ class Connector
         }
 
         // Store certificates
-        $this->storeCertificate($csrPostResponseBodyJson->crt, 'crt.pem');
-        $this->storeCertificate($csrPostResponseBodyJson->clientCrt, 'clientCrt.pem');
-        $this->storeCertificate($csrPostResponseBodyJson->caCrt, 'caCrt.pem');
-        // TODO check if they were successfully stored
+        try {
+            $this->storeCertificate($csrPostResponseBodyJson->crt, 'crt.pem');
+            $this->storeCertificate($csrPostResponseBodyJson->clientCrt, 'clientCrt.pem');
+            $this->storeCertificate($csrPostResponseBodyJson->caCrt, 'caCrt.pem');
+        } catch (Exception $exception) {
+            return new WP_Error(500, 'Could not store one or more certificates: ' + $exception->getMessage());
+        }
 
         // Store important URLs
         update_option('kymaconnector_metadata_url', $body_json->api->metadataUrl);
@@ -119,11 +126,9 @@ class Connector
     private function storeCertificate($data, $fileName)
     {
         $folder = $this->getKymaBasepath() . "/certs"; 
-        mkdir($folder, 0640, true);
+        $this->ensureDirectory($folder);
         $path = "$folder/$fileName";
 
-        // TODO ensure existance of directory
-        // TODO check writing rights
         // TODO sanitize file names
 
         $handle = fopen($path, 'w');
@@ -246,5 +251,23 @@ class Connector
         curl_setopt($ch, CURLOPT_VERBOSE, true);
         
         return $ch;
+    }
+
+    private function ensureDirectory($path)
+    {
+        if (file_exists($path) === false) {
+            $success = mkdir($path, 0640, true);
+            if ($success === false) {
+                throw new Exception('Could not create folder ' + $folder);
+            }
+        }
+
+        if (is_dir($path) === false) {
+            throw new Exception('Could not find folder ' + $folder);
+        }
+
+        if (is_writable($path) === false) {
+            throw new Exception("Folder $folder is not writable");
+        }
     }
 }
