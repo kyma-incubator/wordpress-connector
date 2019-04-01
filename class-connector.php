@@ -37,7 +37,7 @@ class Connector
         }
 
         $dir = $this->getKymaBasepath();
-        mkdir($dir, 0777, true);
+        mkdir($dir, 0640, true);
 
         if (openssl_pkey_export_to_file($key, $dir . '/privkey.pem') === false) {
             return new WP_Error(500, 'Could not store private key');
@@ -119,7 +119,7 @@ class Connector
     private function storeCertificate($data, $fileName)
     {
         $folder = $this->getKymaBasepath() . "/certs"; 
-        mkdir($folder, 0777, true);
+        mkdir($folder, 0640, true);
         $path = "$folder/$fileName";
 
         // TODO ensure existance of directory
