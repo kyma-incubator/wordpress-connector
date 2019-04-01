@@ -101,10 +101,15 @@ class Connector
 
     public function disconnect()
     {
+        $result = $this->deregister_application();
+        if (is_wp_error($result)) {
+            return $result;
+        }
+
         update_option('kymaconnector_metadata_url', '');
         update_option('kymaconnector_event_url', '');
         update_option('kymaconnector_application_id', '');
-        // TODO: deregister application
+
         // TODO: delete certificates?
     }
 
@@ -234,10 +239,36 @@ class Connector
         } elseif($code == 404) {
             add_settings_error( 'kymaconnector_messages', 'kymaconnector_message', "Application Registration Failed due to 404 - ".$resp, 'error' );
             update_option('kymaconnector_application_id', '');
-            PluginAdmin::register_application($event_spec);
+            self::register_application($event_spec);
         } else {
             add_settings_error( 'kymaconnector_messages', 'kymaconnector_message', "Application Registration Failed - ".$resp, 'error' );
+            return new WP_Error($code, $resp);
         }
+
+        return true;
+    }
+
+    public function deregister_application()
+    {
+        $url =  get_option("kymaconnector_metadata_url");
+        $id = get_option("kymaconnector_application_id");
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, $url . "/" . $id);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+        
+        $ch = self::add_clientcert_header($ch);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        
+        $resp = curl_exec($ch);
+
+        $code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+
+        if($code !== 204){
+            return new WP_Error($code);
+        }
+
+        return true;
     }
     
     public static function add_clientcert_header( $ch ) {

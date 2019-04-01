@@ -2,6 +2,7 @@ jQuery(document).ready(function($) {
     $("#kymaconnectbtn").click(function() {
         // TODO: show a spinner
         // TODO: disable button
+        // TODO: refresh UI afterwards
         var this2 = this;
         let url = document.getElementById('kyma-connect-url').value;
         $.post(ajaxurl, {
@@ -23,6 +24,7 @@ jQuery(document).ready(function($) {
     $("#kymadisconnectbtn").click(function() {
         // TODO: show a spinner
         // TODO: disable button
+        // TODO: refresh UI afterwards
         var this2 = this;
         $.post(ajaxurl, {
             _ajax_nonce: kyma_ajax_vars.disconnectnonce,

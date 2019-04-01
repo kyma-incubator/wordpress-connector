@@ -52,8 +52,8 @@ class Core
     {
         $this->connector = new Connector();
         $this->event_settings = new EventSettings('kymaconnector', 'kymaconnector-settings');
-        add_action('activated_plugin', array($this, 'onPluginChanges'));
-        add_action('deactivated_plugin', array($this, 'onPluginChanges'));
+        add_action('activated_plugin', array($this, 'updateRegistration'));
+        add_action('deactivated_plugin', array($this, 'updateRegistration'));
 
         $settings = new Settings('kymaconnector-settings', 'kymaconnector', $this->connector, $this->event_settings);
         add_action('admin_menu', array($settings, 'addSettingsPage'));
@@ -64,9 +64,9 @@ class Core
         add_action('wp_ajax_disconnect_from_kyma', array($this, 'onAjaxKymaDisconnect'));
     }
 
-    public function onPluginChanges()
+    public function updateRegistration()
     {
-        Connector::register_application($this->event_settings->get_event_spec());
+        return Connector::register_application($this->event_settings->get_event_spec());
     }
 
     public function onAjaxKymaConnect()
@@ -79,6 +79,12 @@ class Core
         $result = $this->connector->connect($url);
         if (is_wp_error($result)) {
             wp_send_json_error($result);
+            return;
+        }
+
+        $registrationResult = $this->updateRegistration();
+        if (is_wp_error($registrationResult)) {
+            wp_send_json_error($registrationResult);
             return;
         }
 
