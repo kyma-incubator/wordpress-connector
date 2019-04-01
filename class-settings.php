@@ -128,11 +128,6 @@ class Settings
         if (!empty(get_option('kymaconnector_metadata_url'))) {
             Connector::register_application($this->event_settings->get_event_spec());
         }
-
-        if ( isset( $_GET['settings-updated'] ) ) {
-            // add settings saved message with the class of "updated"
-            add_settings_error( 'kymaconnector_messages', 'kymaconnector_message', "Settings Saved", 'updated' );
-        }
             
         // show error/update messages
         settings_errors( 'kymaconnector_messages' );
