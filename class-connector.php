@@ -286,7 +286,7 @@ class Connector
     private function ensureDirectory($path)
     {
         if (file_exists($path) === false) {
-            $success = mkdir($path, 0640, true);
+            $success = mkdir($path, 0770, true);
             if ($success === false) {
                 throw new Exception('Could not create folder ' + $folder);
             }
