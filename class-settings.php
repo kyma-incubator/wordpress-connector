@@ -103,6 +103,9 @@ class Settings
         register_setting($this->option_group, 'kymaconnector_name');
         register_setting($this->option_group, 'kymaconnector_description');
 
+        add_option('kymaconnector_name', 'Wordpress');
+        add_option('kymaconnector_description', 'Wordpress API');
+
         $this->event_settings->settings_page();
     }
 

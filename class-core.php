@@ -31,6 +31,8 @@ class Core
         // TODO: Update due to registration data
         add_option('kymaconnector_event_url', '');
         add_option('kymaconnector_metadata_url', '');
+        
+        
 
         $user_name = self::KYMA_USER_NAME;
         $user_email = self::KYMA_USER_EMAIL;

@@ -55,6 +55,9 @@ class EventSettings {
         register_setting($this->option_group, $this->option_group.'_event_api_version');
         register_setting($this->option_group, $events_setting_name);
 
+        add_option($this->option_group.'_event_api_name', 'Wordpress Event`s');
+        add_option($this->option_group.'_event_api_description', 'Wordpress Event`s');
+        add_option($this->option_group.'_event_api_version', 'v1');
 
         add_settings_section( 
             $this->option_group.'_event_settings', 
@@ -135,6 +138,7 @@ class EventSettings {
 
     public function field_events_cb(){
         ?>
+        List of events forwarded to Kyma. The System will use <a href="https://codex.wordpress.org/Plugin_API/Action_Reference">Wordpress Action Hooks</a> to subscribe. <br/>The attributes deffined in the event payload section are mapped to the number of parameteres of the action hook.  
         <table id="event-settings">
             <tr>
                 <th>Event Type</th>
