@@ -2,18 +2,18 @@
 
 ## Overview
 
-Project wordpress-connector was created to enable easy communication between Wordpress and Kyma. With this project set up, user is ready to make first API registration from Wordpress admin panel and start using Wordpress events based on [hooks](https://developer.wordpress.org/reference/hooks/) with Kyma.
+Project wordpress-connector was created to enable easy communication between WordPress and Kyma. With this project set up, user is ready to make first API registration from WordPress admin panel and start using WordPress events based on [hooks](https://developer.wordpress.org/reference/hooks/) with Kyma.
 
 ## Requirements
 
-The installation requires a working basic auth solution for the json API. The default [Basic-Auth](https://github.com/WP-API/Basic-Auth) plugin from wordpress is providing it. If there are any problems with the plugin, maybe a patched version (https://github.com/eventespresso/Basic-Auth) will solve the problem.
+The installation requires a working basic auth solution for the json API. The default [Basic-Auth](https://github.com/WP-API/Basic-Auth) plugin from WordPress is providing it. If there are any problems with the plugin, maybe a patched version (https://github.com/eventespresso/Basic-Auth) will solve the problem.
 
 ## Installation
 
-As the plugin is not part of the Wordpress Plugin Marketplace, it has to eb installed manual.
+As the plugin is not part of the WordPress Plugin Marketplace, it has to eb installed manual.
 
 1. Download the Plugin as a zipfile form github.
-2. Navigate in Wordpress to `Plugins->Add New->Upload Plugin` and upload the zipfile.
+2. Navigate in WordPress to `Plugins->Add New->Upload Plugin` and upload the zipfile.
 3. Activate the Plugin
 
 ## Connect Kyma
