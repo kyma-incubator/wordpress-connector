@@ -25,4 +25,4 @@ This will register all existing API's and configured Events in kyma.
 
 ## Known Issues
 
-The Plugin was developed to showcase the functionality of the Kyma Application Connector with a opensource application. So far it is not well tested and might dedicated to bugs. Feedback and pullrequests to improve the pulgin are highly appreciated. 
+The Plugin was developed to showcase the functionality of the Kyma Application Connector with a opensource application. So far it is not well tested and might dedicated to bugs. Feedback and pullrequests to improve the pulgin are highly appreciated.
