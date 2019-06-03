@@ -56,6 +56,13 @@ class Settings
             $this->page_name,
             'kymaconnector_settings'
         );
+        add_settings_field(
+            'kymaconnector-ssl',
+            'Verify SSL',
+            array($this, 'echoFieldSslVerify'),
+            $this->page_name,
+            'kymaconnector_settings'
+        );
 
         add_settings_section( 
             'kymaconnector_api_settings', 
@@ -98,6 +105,7 @@ class Settings
             'kymaconnector_api_settings'
         );
 
+        register_setting($this->option_group, 'kymaconnector_sslverify');
         register_setting($this->option_group, 'kymaconnector_user');
         register_setting($this->option_group, 'kymaconnector_password');
         register_setting($this->option_group, 'kymaconnector_name');
@@ -105,6 +113,7 @@ class Settings
 
         add_option('kymaconnector_name', 'Wordpress');
         add_option('kymaconnector_description', 'Wordpress API');
+        add_option('kymaconnector_sslverify', 1);
 
         $this->event_settings->settings_page();
     }
@@ -121,6 +130,10 @@ class Settings
             echo '<input type="url" id="kyma-connect-url">';
             echo '<input type="button" id="kymaconnectbtn" class="button" value="Connect">';
         }
+    }
+    public function echoFieldSslVerify()
+    {
+        echo '<input name="kymaconnector_sslverify" id="kymaconnector_sslverify" type="checkbox" value="1" class="code" ' . checked( 1, get_option( 'kymaconnector_sslverify' ), false ) . ' />';   
     }
 
     public function echoSettingsPage()

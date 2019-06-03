@@ -107,6 +107,9 @@ class Event {
 
         $url =  get_option("kymaconnector_event_url");
         $ch = curl_init();
+        $sslVerify = (get_option("kymaconnector_sslverify")==1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $sslVerify );
+
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
         $ch = Connector::add_clientcert_header($ch);

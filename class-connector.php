@@ -17,7 +17,9 @@ class Connector
     public function connect($url)
     {
         // Retrieve the CSR info from the given URL
-        $response = wp_remote_get($url);
+        
+        $sslVerify = (get_option("kymaconnector_sslverify")==1);
+        $response = wp_remote_get($url, array('sslverify' => $sslVerify));
         if (is_wp_error($response)) {
             return $response;
         }
@@ -61,7 +63,7 @@ class Connector
         // Send the CSR
         $csrURL = $body_json->csrUrl;
         $csrPostBody = array('csr' => base64_encode($csrBase64));
-        $csrPostResponse = $this->http->post($csrURL, array('headers' => ['Content-Type' => 'application/json'], 'body' => json_encode($csrPostBody)));
+        $csrPostResponse = $this->http->post($csrURL, array('sslverify' => $sslVerify, 'headers' => ['Content-Type' => 'application/json'], 'body' => json_encode($csrPostBody)));
         if (is_wp_error($csrPostResponse)) {
             return new WP_Error(500, 'Could not send CSR');
         }
@@ -160,6 +162,8 @@ class Connector
         }
         
         $ch = curl_init();
+        $sslVerify = (get_option("kymaconnector_sslverify")==1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $sslVerify );
 
         curl_setopt($ch, CURLOPT_URL, $url . "/" . $applicationId);
         
@@ -209,7 +213,8 @@ class Connector
         //error_log($registration_body);
         
         $ch = curl_init();
-
+        $sslVerify = (get_option("kymaconnector_sslverify")==1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $sslVerify );
         if (empty($id)){
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
@@ -253,6 +258,8 @@ class Connector
         $url =  get_option("kymaconnector_metadata_url");
         $id = get_option("kymaconnector_application_id");
         $ch = curl_init();
+        $sslVerify = (get_option("kymaconnector_sslverify")==1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $sslVerify );
 
         curl_setopt($ch, CURLOPT_URL, $url . "/" . $id);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
