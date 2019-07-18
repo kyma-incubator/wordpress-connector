@@ -33,7 +33,7 @@ class Connector
 
         // Generate and store a private key
         // TODO: use the key algorithm specified in $response
-        $key = openssl_pkey_new(array('private_key_bits' => 2048, 'private_key_type' => OPENSSL_KEYTYPE_RSA));
+        $key = openssl_pkey_new(array('private_key_bits' => 4096, 'private_key_type' => OPENSSL_KEYTYPE_RSA, 'digest_alg' => 'sha256'));
         if ($key === false) {
             return new WP_Error(500, 'Could not generate private key');
         }
@@ -52,7 +52,7 @@ class Connector
         // Generate a CSR
         // TODO: possibly respect the certificate extensions specified in $response (none at the time of writing)
         $dn = $this->getDistinguishedName($body_json->certificate->subject);
-        $csr = openssl_csr_new($dn, $key);
+        $csr = openssl_csr_new($dn, $key, array('digest_alg' => 'sha256'));
         if ($csr === false) {
             return new WP_Error(500, 'Could not generate CSR');
         }
@@ -211,7 +211,7 @@ class Connector
         $url =  get_option("kymaconnector_metadata_url");
         $id = get_option("kymaconnector_application_id");
         //error_log($registration_body);
-        
+
         $ch = curl_init();
         $sslVerify = (get_option("kymaconnector_sslverify")==1);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $sslVerify );
