@@ -6,7 +6,10 @@ Project wordpress-connector was created to enable easy communication between Wor
 
 ## Requirements
 
+You need a running wordpress instance by either creating an account at [wordpress](wordpress.com) or by installing it to your kyma cluster following the instructions of this [blog post](https://kyma-project.io/blog/2019/7/8/extend-wordpress#word-press-installation)
+
 The installation requires a working Basic Authentication solution for the [REST API](https://developer.wordpress.org/rest-api/). The default [Basic-Auth](https://github.com/WP-API/Basic-Auth) plugin from WordPress is providing it. If there are any problems with the plugin, maybe a patched version (https://github.com/eventespresso/Basic-Auth) will solve the problem.
+
 
 ## Installation
 
