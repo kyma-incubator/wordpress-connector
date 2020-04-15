@@ -42,7 +42,8 @@ class EventSettings {
         $events = array();
         array_push($events, array('event_type'=>'user.created', 'event_version'=>'v1', 'hook'=>'user_register', 'description'=>'User Register Event v1', 'payload'=>'{"userId":{"type":"string","description":"Id of a User","title":"User uid"}}'));
         array_push($events, array('event_type'=>'comment.post', 'event_version'=>'v1', 'hook'=>'comment_post', 'description'=>'Comment Post Event v1', 'payload'=>'{"commentId":{"type":"string","description":"Unique id of a comment","title":"Comment id"},"commentStatus":{"type":"string","description":"Status of the comment","title":"Status of the comment"}}'));
-
+        array_push($events, array('event_type'=>'post.published', 'event_version'=>'v1', 'hook'=>'publish_post', 'description'=>'Comment Post Event v1', 'payload'=>'{"postId":{"type":"string","description":"Unique id of a post","title":"Post id"}}'));
+        
         add_option($option_group.'_events', $events);
     }
 
